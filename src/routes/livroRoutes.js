@@ -1,8 +1,10 @@
 const { Router } = require('express');
-const { criar } = require('../controllers/livroController');
+const { criar, buscarPorId, atualizar } = require('../controllers/livroController');
 
 const router = Router();
 
 router.post("/", criar);
+router.get("/:id", buscarPorId);
+router.put("/:id", atualizar);
 
 module.exports = router;
