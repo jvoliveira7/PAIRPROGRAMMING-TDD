@@ -1,8 +1,8 @@
+require('dotenv').config();
+
 const request = require('supertest');
 const app = require('../src/app');
 const { sequelize } = require('../src/models'); // Trazendo o banco
-
-require('dotenv').config();
 
 beforeAll(async () => {
     await sequelize.sync({ force: true }); 
@@ -44,4 +44,30 @@ test('PUT /livros/:id deve atualizar um livro e retornar 200', async () => {
     // resultado
     expect(res.status).toBe(200);
     expect(res.body.titulo).toBe('O Retorno do Rei');
+});
+
+test('GET /livros deve retornar uma lista de todos os livros e o status 200', async () => {
+    
+    await request(app).post('/livros').send({ titulo: 'O Guia do Mochileiro das Galáxias', autor: 'Douglas Adams'});
+
+    const res = await request(app).get('/livros');
+    
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body.length).toBeGreaterThan(0);
+});
+
+test('DELETE /livros/:id deve deletar um livro e retornar 200', async () => {
+    
+    const criacao = await request(app).post('/livros').send({ titulo: 'O Código Da Vinci', autor: 'Dan Brown'});
+    const idDoLivro = criacao.body.id;
+
+    const resDelete = await request(app).delete(`/livros/${idDoLivro}`);
+    
+  
+    expect(resDelete.status).toBe(200);
+
+   
+    const resGet = await request(app).get(`/livros/${idDoLivro}`);
+    expect(resGet.status).toBe(404);
 });

@@ -1,4 +1,4 @@
-const { criarLivro, buscarLivroPorId, atualizarLivro } = require('../services/livroService');
+const { criarLivro, buscarLivroPorId, atualizarLivro, listarTodosLivros, deletarLivro } = require('../services/livroService');
 
 const criar = async (req, res) => {
     const { titulo, autor } = req.body;
@@ -21,11 +21,9 @@ const buscarPorId = async (req, res) => {
     res.status(200).json(livro);
 };
 
-
 const atualizar = async (req, res) => {
     const { id } = req.params;
     const { titulo, autor } = req.body;
-
     
     if (!titulo || !autor) {
         return res.status(400).json({ erro: 'titulo e autor são obrigatórios para atualizar' });
@@ -40,4 +38,21 @@ const atualizar = async (req, res) => {
     res.status(200).json(livroAtualizado);
 };
 
-module.exports = { criar, buscarPorId, atualizar };
+const listarTodos = async (req, res) => {
+    const livros = await listarTodosLivros();
+    res.status(200).json(livros);
+};
+
+const deletar = async (req, res) => {
+    const { id } = req.params;
+    
+    const deletado = await deletarLivro(id);
+
+    if (!deletado) {
+        return res.status(404).json({ erro: 'Livro não encontrado para deletar' });
+    }
+
+    res.status(200).json({ mensagem: 'Livro deletado com sucesso' });
+};
+
+module.exports = { criar, buscarPorId, atualizar, listarTodos, deletar };

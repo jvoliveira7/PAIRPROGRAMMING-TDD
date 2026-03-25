@@ -12,16 +12,29 @@ const criarLivro = async (titulo, autor) => {
 const buscarLivroPorId = async (id) => {
   const livro = await Livro.findByPk(id);
   return livro;
-
 };
 
 const atualizarLivro = async (id, titulo, autor) => {
   const livro = await Livro.findByPk(id);
   
-  if (!livro) return null; //se não achar o livro, retorna nulo
+  if (!livro) return null; 
 
-  await livro.update({ titulo, autor }); // atualiza no banco
-  return livro; //retorna o livro atualizado
+  await livro.update({ titulo, autor }); 
+  return livro; 
 };
 
-module.exports = { criarLivro, buscarLivroPorId, atualizarLivro };
+const listarTodosLivros = async () => {
+  const livros = await Livro.findAll();
+  return livros;
+};
+
+const deletarLivro = async (id) => {
+  const livro = await Livro.findByPk(id);
+  
+  if (!livro) return false; 
+  
+  await livro.destroy(); 
+  return true; 
+};
+
+module.exports = { criarLivro, buscarLivroPorId, atualizarLivro, listarTodosLivros, deletarLivro };
